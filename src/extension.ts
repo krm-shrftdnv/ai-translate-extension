@@ -37,12 +37,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function translateCommitMessage(text: string): Promise<string> {
     const googleProjectId = 'YOUR_PROJECT_ID';
-    const apiKey = 'YOUR_TRANSLATION_API_KEY';
+    const apiKey = 'YOUR_TRANSLATION_API_KEY'; // filepath
     const url = 'https://translation.googleapis.com/language/translate/v2';
-    const translate = new Translate({googleProjectId});
+    const translate = new Translate({
+        projectId: googleProjectId,
+        keyFilename: apiKey
+      });
 
     try {
-        return translate.translate(text, 'en');
+        const [translatedText] = await translate.translate(text, 'en');
+        return translatedText;
         // const response = await axios.post(url, {
         //     q: text,
         //     source: 'ru',
@@ -67,7 +71,15 @@ async function validateTranslation(text: string): Promise<string> {
     });
 
     try {
-        openai.completions.create({
+
+        const response = await openai.completions.create({
+            model: 'gpt-3.5-turbo-instruct',
+            prompt: `Validate the following commit message: ${text}`,
+            temperature: 0.7,
+          });
+          return response.choices[0].text;
+
+        /*openai.completions.create({
             model: 'gpt-3.5-turbo-instruct',
             prompt: `Validate the following commit message: ${text}`,
             temperature: 0.7,
@@ -80,6 +92,7 @@ async function validateTranslation(text: string): Promise<string> {
                 throw error;
             }
         });
+        */
     } catch (error) {
         if (error instanceof axios.AxiosError && error.response) {
             throw new Error(error.response.data.error.message);
