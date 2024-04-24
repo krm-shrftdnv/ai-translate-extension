@@ -10,6 +10,8 @@
             ],
             "env": {
                 "OPENAI_API_KEY": "",
+                "OPENAI_ORGANIZATION_ID": "",
+                "OPENAI_PROJECT_ID": "",
                 "YANDEX_API_KEY": ""
             },
             "name": "Launch Extension",

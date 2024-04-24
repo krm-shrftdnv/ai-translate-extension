@@ -81,12 +81,13 @@ async function translateMessage(text: string): Promise<string> {
 
 async function validateTranslation(text: string, translatedText: string): Promise<string> {
     const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
+        organization: process.env.OPENAI_ORGANIZATION_ID,
+        project: process.env.OPENAI_PROJECT_ID,
       });
 
     try {
         const response = await openai.completions.create({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-3.5-turbo-instruct',
             prompt: `Validate the following translation of message ${text}: ${translatedText}. Response only with validated translation.`,
             temperature: 0.7,
           });
