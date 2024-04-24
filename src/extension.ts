@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
 import OpenAI from "openai";
-
-const {Translate} = require('@google-cloud/translate').v2;
+import dotenv from 'dotenv'; 
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Translation and validation extension is now active!');
+    dotenv.config();
 
-    let disposable = vscode.commands.registerCommand('extension.translateAndValidateCommitMessage', async () => {
+    let disposable = vscode.commands.registerCommand('ai-translate.translateAndValidateMessage', async () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             vscode.window.showErrorMessage('No active text editor!');
@@ -16,16 +16,32 @@ export function activate(context: vscode.ExtensionContext) {
 
         const selection = editor.selection;
         const text = editor.document.getText(selection);
+        if (!text) {
+            vscode.window.showErrorMessage('No text selected!');
+            return;
+        }
 
+        var translatedText = "";
         try {
-            const translatedText = await translateCommitMessage(text);
-            const validationResponse = await validateTranslation(translatedText);
-
-            vscode.window.showInformationMessage(`Translated commit message: ${translatedText}`);
+            translatedText = await translateMessage(text);
+            vscode.window.showInformationMessage(`Translated message: ${translatedText}`);
+        } catch (error) {
+            if (error instanceof Error && error.message) {
+                vscode.window.showErrorMessage(`Translation failed: ${error.message}`);
+            } else {
+                console.error(error);
+            }
+        }
+        if (translatedText == "") {
+            vscode.window.showErrorMessage('No text translated!');
+            return;
+        }
+        try {
+            var validationResponse = await validateTranslation(text, translatedText);
             vscode.window.showInformationMessage(`Validation result: ${validationResponse}`);
         } catch (error) {
             if (error instanceof Error && error.message) {
-                vscode.window.showErrorMessage(`Translation and validation failed: ${error.message}`);
+                vscode.window.showErrorMessage(`Validation failed: ${error.message}`);
             } else {
                 console.error(error);
             }
@@ -35,64 +51,46 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-async function translateCommitMessage(text: string): Promise<string> {
-    const googleProjectId = 'YOUR_PROJECT_ID';
-    const apiKey = 'YOUR_TRANSLATION_API_KEY'; // filepath
-    const url = 'https://translation.googleapis.com/language/translate/v2';
-    const translate = new Translate({
-        projectId: googleProjectId,
-        keyFilename: apiKey
-      });
+async function translateMessage(text: string): Promise<string> {
+    const url = 'https://translate.api.cloud.yandex.net/translate/v2/translate';
+    const token = process.env.YANDEX_API_KEY;
+    const headers = {
+        'Authorization': `Api-Key ${token}`,
+        'Content-Type': 'application/json'
+    };
+
+    const requestBody = {
+        "targetLanguageCode": "en",
+        "format": "PLAIN_TEXT",
+        "texts": [
+            text
+        ]
+    };
 
     try {
-        const [translatedText] = await translate.translate(text, 'en');
+        const response = await axios.post(url, requestBody, { headers });
+        const translatedText = response.data.translations[0].text;
         return translatedText;
-        // const response = await axios.post(url, {
-        //     q: text,
-        //     source: 'ru',
-        //     target: 'en',
-        //     key: apiKey
-        // });
-        //
-        // return response.data.data.translations[0].translatedText;
     } catch (error) {
         if (error instanceof axios.AxiosError && error.response) {
-            throw new Error(error.response.data.error.message);
-        } else {
-            throw error;
+                    console.error('Error:', error.response.data);
         }
+        throw new Error('Failed to translate text');
     }
 }
 
-async function validateTranslation(text: string): Promise<string> {
+async function validateTranslation(text: string, translatedText: string): Promise<string> {
     const openai = new OpenAI({
-        organization: 'YOUR_ORG_ID',
-        project: '$PROJECT_ID',
-    });
+        apiKey: process.env.OPENAI_API_KEY,
+      });
 
     try {
-
         const response = await openai.completions.create({
-            model: 'gpt-3.5-turbo-instruct',
-            prompt: `Validate the following commit message: ${text}`,
+            model: 'gpt-3.5-turbo',
+            prompt: `Validate the following translation of message ${text}: ${translatedText}. Response only with validated translation.`,
             temperature: 0.7,
           });
           return response.choices[0].text;
-
-        /*openai.completions.create({
-            model: 'gpt-3.5-turbo-instruct',
-            prompt: `Validate the following commit message: ${text}`,
-            temperature: 0.7,
-        }).then((response) => {
-            return response.choices[0].text;
-        }).catch((error) => {
-            if (error instanceof Error && error.message) {
-                throw new Error(error.message);
-            } else {
-                throw error;
-            }
-        });
-        */
     } catch (error) {
         if (error instanceof axios.AxiosError && error.response) {
             throw new Error(error.response.data.error.message);
