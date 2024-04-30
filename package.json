@@ -17,7 +17,23 @@
         "command": "ai-translate.translateAndValidateMessage",
         "title": "ai translate"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "AI Translate",
+      "properties": {
+        "ai-translate.targetLanguage": {
+          "type": "string",
+          "default": "en",
+          "description": "Target language for translation",
+          "enum": ["en", "ru", "zh"],
+          "enumDescriptions": [
+            "English",
+            "Russian",
+            "Chinese"
+          ]
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

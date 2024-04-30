@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 export function activate(context: vscode.ExtensionContext) {
     console.log('Translation and validation extension is now active!');
     dotenv.config();
+    const targetLanguage = vscode.workspace.getConfiguration().get('ai-translate.targetLanguage') as string;
 
     let disposable = vscode.commands.registerCommand('ai-translate.translateAndValidateMessage', async () => {
         const editor = vscode.window.activeTextEditor;
@@ -23,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         var translatedText = "";
         try {
-            translatedText = await translateMessage(text);
+            translatedText = await translateMessage(text, targetLanguage);
             vscode.window.showInformationMessage(`Translated message: ${translatedText}`);
         } catch (error) {
             if (error instanceof Error && error.message) {
@@ -51,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-async function translateMessage(text: string): Promise<string> {
+async function translateMessage(text: string, targetLanguage = 'en'): Promise<string> {
     const url = 'https://translate.api.cloud.yandex.net/translate/v2/translate';
     const token = process.env.YANDEX_API_KEY;
     const headers = {
@@ -60,7 +61,7 @@ async function translateMessage(text: string): Promise<string> {
     };
 
     const requestBody = {
-        "targetLanguageCode": "en",
+        "targetLanguageCode": targetLanguage,
         "format": "PLAIN_TEXT",
         "texts": [
             text
