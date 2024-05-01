@@ -2,7 +2,15 @@
 
 ## Features
 
-This extension allows to translate any highlighed message
+This extension allows to translate any selected text.
+
+[Run extension from command palette](images/ai-translate.gif)
+
+1. Select some text.
+2. Open Command palette with `Ctrl`+`Shift`+`P`
+3. Search for `ai translate`
+4. Run command
+5. Translated text and validated translations will appear as notification
 
 ## Requirements
 
