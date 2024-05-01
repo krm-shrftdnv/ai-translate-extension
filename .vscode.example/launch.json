@@ -9,9 +9,6 @@
                 "--extensionDevelopmentPath=${workspaceFolder}"
             ],
             "env": {
-                "OPENAI_API_KEY": "",
-                "OPENAI_ORGANIZATION_ID": "",
-                "OPENAI_PROJECT_ID": "",
                 "YANDEX_API_KEY": ""
             },
             "name": "Launch Extension",
@@ -21,21 +18,6 @@
             "preLaunchTask": "compile",
             "request": "launch",
             "type": "extensionHost"
-        },
-        {
-            "args": [],
-            "cwd": "${workspaceRoot}",
-            "name": "run extension",
-            "preLaunchTask": "compile",
-            "program": "${workspaceRoot}/src/extension.ts",
-            "request": "launch",
-            "runtimeArgs": [
-                "--nolazy"
-            ],
-            "runtimeExecutable": null,
-            "sourceMaps": true,
-            "stopOnEntry": false,
-            "type": "node"
         }
     ]
 }
