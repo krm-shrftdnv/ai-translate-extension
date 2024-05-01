@@ -24,7 +24,7 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-### 1.0.0
+### v1.0.0
 
 Initial release of ai-translate extension.
 
