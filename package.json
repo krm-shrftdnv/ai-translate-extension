@@ -3,6 +3,8 @@
   "displayName": "ai-translate",
   "description": "",
   "version": "0.0.1",
+  "publisher":"krm-shrftdnv",
+  "repository":"https://github.com/krm-shrftdnv/ai-translate-extension",
   "engines": {
     "vscode": "^1.88.0"
   },
