@@ -33,6 +33,11 @@
             "Russian",
             "Chinese"
           ]
+        },
+        "ai-translate.yandexApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Yandex API Key for translating text"
         }
       }
     }

@@ -7,6 +7,7 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('Translation and validation extension is now active!');
     dotenv.config();
     const targetLanguage = vscode.workspace.getConfiguration().get('ai-translate.targetLanguage') as string;
+    const yandexApiKey = vscode.workspace.getConfiguration().get('ai-translate.yandexApiKey') as string;
 
     let disposable = vscode.commands.registerCommand('ai-translate.translateAndValidateMessage', async () => {
         const editor = vscode.window.activeTextEditor;
@@ -24,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         var translatedText = "";
         try {
-            translatedText = await translateMessage(text, targetLanguage);
+            translatedText = await translateMessage(text, targetLanguage, yandexApiKey);
             vscode.window.showInformationMessage(`Translated message: ${translatedText}`);
         } catch (error) {
             if (error instanceof Error && error.message) {
@@ -38,7 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
         try {
-            var validationResponse = await validateTranslationYaGPT(text, translatedText);
+            var validationResponse = await validateTranslationYaGPT(text, translatedText, yandexApiKey);
             vscode.window.showInformationMessage(`Yandex GPT validation result: ${validationResponse}`);
         } catch (error) {
             if (error instanceof Error && error.message) {
@@ -52,11 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-async function translateMessage(text: string, targetLanguage = 'en'): Promise<string> {
+async function translateMessage(text: string, targetLanguage = 'en', apiKey: string): Promise<string> {
     const url = 'https://translate.api.cloud.yandex.net/translate/v2/translate';
-    const token = process.env.YANDEX_API_KEY;
     const headers = {
-        'Authorization': `Api-Key ${token}`,
+        'Authorization': `Api-Key ${apiKey}`,
         'Content-Type': 'application/json'
     };
 
@@ -102,10 +102,8 @@ async function validateTranslationOpenAI(text: string, translatedText: string): 
     }
 }
 
-async function validateTranslationYaGPT(text: string, translatedText: string): Promise<string> {
+async function validateTranslationYaGPT(text: string, translatedText: string, apiKey: string): Promise<string> {
     const url = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion';
-    const apiKey = process.env.YANDEX_API_KEY;
-    const token = process.env.YANDEX_IAM_TOKEN;
     const headers = {
         'Authorization': `Api-Key ${apiKey}`,
         'Content-Type': 'application/json',
