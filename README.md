@@ -19,6 +19,9 @@ You should get [Yandex Api-Key](https://yandex.cloud/ru/docs/iam/operations/api-
 ## Extension Settings
 
 To configure extension got to File -> Preferences -> Settings -> Extensions -> AI Translate
+
+![Plugin settings](images/settings.png)
+
 1. You can select language to which selected text will be translated. Available: English(en), Russian(ru), Chinese(ch).
 2. You can set up your YANDEX API KEY for translating text
 
@@ -29,7 +32,7 @@ To configure extension got to File -> Preferences -> Settings -> Extensions -> A
 3. Launch VSCode
 4. Select File -> Open Folder
 5. Choose folder where you cloned the repository
-6. Open Terminal and Run npm install to install the dependencies
+6. Open Terminal and Run `npm install` to install the dependencies
 7. Create folder .vscode
 8. Move files launch.json and tasks.json from .vscode.example folder to .vscode folder
 9. Select Run -> Start Debugging or Select Run and Debug from sidebar and click on Launch Ext
