@@ -39,7 +39,7 @@ To configure extension got to File -> Preferences -> Settings -> Extensions -> A
 
 ## Install from VSIX
 
-1. Download latest plugin version(.vsix file) from releases
+1. Download latest plugin version(.vsix file) from [releases](https://github.com/azatyamanaev/ai-translate-extension/releases)
 2. Launch VSCode
 3. Go to File -> Preferences -> Extensions or Select Extensions from sidebar
 4. Click Views and More Actions...
