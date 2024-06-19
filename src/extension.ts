@@ -65,7 +65,8 @@ async function translateMessage(text: string, targetLanguage = 'en'): Promise<st
         "format": "PLAIN_TEXT",
         "texts": [
             text
-        ]
+        ],
+        "speller": true
     };
 
     try {
@@ -112,7 +113,7 @@ async function validateTranslationYaGPT(text: string, translatedText: string): P
         'x-folder-id': 'ai.languageModels.user',
     };
     const requestBody = {
-        "modelUri": "gpt://b1gvelj2kbbpnph7e7v0/yandexgpt",
+        "modelUri": "gpt://" + process.env.YANDEX_CLOUD_ID +"/yandexgpt",
         "completionOptions": {
             "stream": true,
             "temperature": 0.7,
